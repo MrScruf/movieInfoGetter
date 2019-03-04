@@ -1,0 +1,3 @@
+#Actors=herec(jmeno,prijmeni)
+#ActorRel=film_herec_vazba(id_film,id_herec)
+#Studio=studio(nazev)
