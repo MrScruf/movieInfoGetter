@@ -15,10 +15,10 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Movie m = new Movie("Furious 7");
+		Movie m = new Movie("The Dark Knight");
 		InfoGetter ig = new InfoGetter();
 		try {
-			ig.getMovieInfo(m,new Configurator());
+			ig.getMovieInfo(m);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
