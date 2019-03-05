@@ -10,8 +10,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import java.awt.Font;
@@ -33,10 +31,12 @@ public class Form {
 	JList<File> list;
 	DefaultListModel<File> listModel = null;
 	private JButton btnDelete;
+	private JScrollPane scrollPane;
 	/**
 	 * Create the application.
 	 */
 	public Form() {
+		setPrintStream();
 		initialize();
 	}
 
@@ -49,18 +49,20 @@ public class Form {
 		frame.setBounds(100, 100, 1364, 720);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-
-		textArea = new JTextArea();
-		textArea.setBounds(12, 90, 985, 570);
-		frame.getContentPane().add(textArea);
 		frame.setVisible(true);
+		
+		textArea = new JTextArea();		
 		textArea.setEditable(false);
 		textArea.setAutoscrolls(true);
-		setPrintStream();		
+		
+		scrollPane = new JScrollPane(textArea);
+		scrollPane.setBounds(12, 90, 985, 570);
+		scrollPane.setAutoscrolls(true);
+		frame.getContentPane().add(scrollPane);		
 		
 		listModel = new DefaultListModel<File>();
-		
 		listener = new MyDDListener(loadedFiles, listModel);
+		new DropTarget(textArea, listener);	
 		
 		list = new JList<File>(listModel);
 		list.setBounds(1009, 90, 325, 466);
@@ -70,8 +72,6 @@ public class Form {
 		frame.getContentPane().add(list);
 		
 		
-		
-		 new DropTarget(textArea, listener);
 		
 		JButton btnNewButton = new JButton("Browse files");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -93,12 +93,8 @@ public class Form {
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Starting ...");
-				try {
-					startLoading();
-				} catch (IOException e1) {
-					System.out.println("Error occured");
-					System.out.println(e1.getStackTrace());
-				}
+				LoadingThread lt = new LoadingThread(loadedFiles);
+				lt.start();
 			}
 		});
 		btnStart.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -123,6 +119,7 @@ public class Form {
 		fileChooser = new JFileChooser();
 		fileChooser.setLocation(50, 50);
 		fileChooser.setSize(600, 600);
+		
 	}
 
 	private File chooseFile() {
@@ -133,29 +130,15 @@ public class Form {
 		}
 		return null;
 	}
-	StringBuilder sb = new StringBuilder();
 	private void setPrintStream() {
 		out = new OutputStream() {
 			@Override
 			// Override the write(int) method to append the character to the JTextArea
 			public void write(int b) throws IOException {
-				if (b == '\r')
-				     return;
-
-				  if (b == '\n') {
-				     final String text = sb.toString() + "\n";
-				     SwingUtilities.invokeLater(new Runnable() {
-				        // except this is queued onto the event thread.
-				        public void run() {
-				           textArea.append(text);
-				        }
-				     });
-				     sb.setLength(0);
-
-				     return;
-				  }
-
-				  sb.append((char) b);
+				textArea.append(String.valueOf((char)b));
+				if((char)b == '\n') {
+					textArea.update(textArea.getGraphics());
+				}
 			}
 		};
 
@@ -167,19 +150,5 @@ public class Form {
 		System.setOut(printOut);
 
 	}
-	
-	private void startLoading() throws IOException {
-		InfoGetter ig = new InfoGetter();
-		FileLoader fl = new FileLoader();
-		ArrayList<Movie> loaded = new ArrayList<Movie>();
-		for(File f : loadedFiles) {
-			System.out.println("Loading file: " + f.getName());
-			loaded.addAll(fl.loadMovies(f.getAbsolutePath()));
-		}
-		for(Movie m : loaded) {
-			System.out.println("______________________________________________________");
-			System.out.println("Starting movie: "+ m.getName());
-			ig.getMovieInfo(m);
-		}
-	}
+
 }

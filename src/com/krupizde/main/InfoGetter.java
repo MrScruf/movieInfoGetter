@@ -2,6 +2,7 @@ package com.krupizde.main;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,9 +31,9 @@ public class InfoGetter {
 		Movie.repairMovie(m);
 		System.out.println(m.getGenres());
 		System.out.println("------------------------------------------------------");
-		System.out.print("Actors:" + m.getActors().toString());
+		System.out.println("Actors:" + m.getActors().toString());
 		System.out.println("------------------------------------------------------");
-		System.out.print("Studio:" + m.getStudio());
+		System.out.println("Studio:" + m.getStudio());
 		System.out.println("------------------------------------------------------");
 		System.out.println("Movie length: " + m.getMovieLength());
 		System.out.println("------------------------------------------------------");
@@ -62,13 +63,13 @@ public class InfoGetter {
 					break;
 				if (elements.size() == 3) {
 					temp.add(new Actor(elements.get(0).text(), elements.get(1).text()));
-				} else if(elements.size() == 2){
+				} else if (elements.size() == 2) {
 					try {
 						temp.add(new Actor(elements.get(0).text().split(" ")[0], elements.get(0).text().split(" ")[1]));
-					}catch(java.lang.ArrayIndexOutOfBoundsException e) {
-						System.out.println("Cant load actor: "+elements.get(0).text());
+					} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+						System.out.println("Cant load actor: " + elements.get(0).text());
 					}
-					
+
 				}
 
 			}
@@ -94,14 +95,51 @@ public class InfoGetter {
 		if (el.size() != 0) {
 			Elements stud = el.get(0).getElementsByClass("h998We mlo-c");
 			if (stud.size() == 0)
-				return null;
+				return getStudio(movieName, doc);
 			Elements std = stud.get(0).getElementsByClass("title");
 			if (std.size() == 0)
-				return null;
+				return getStudio(movieName, doc);
 			temp = new Studio(std.get(0).text());
 		}
 
 		return temp;
+	}
+
+	private Studio getStudio(final String movieName, Document doc) {
+		Elements el = doc.getElementsByClass("EDblX DAVP1");
+		if (el.size() == 0)
+			return getStudioAgain(movieName, doc);
+		Elements ele = el.get(0).getElementsByClass("uais2d");
+		if (ele.size() == 0)
+			return getStudioAgain(movieName, doc);
+		Elements elem = ele.get(0).getElementsByClass("wfg6Pb");
+		if (elem.size() == 0)
+			return getStudioAgain(movieName, doc);
+		String s = "";
+		for (Element e : elem) {
+			s += e.text() + " ";
+		}
+		s = s.trim();
+		return new Studio(s);
+	}
+
+	private Studio getStudioAgain(final String movieName, Document doc) {
+		Elements el = doc.getElementsByClass("oo0Xme");
+		if (el.size() == 0)
+			return null;
+		Elements ele = el.get(0).getElementsByClass("uais2d");
+		if (ele.size() == 0)
+			return null;
+		Elements elem = ele.get(0).getElementsByClass("wfg6Pb");
+		if (elem.size() == 0)
+			return null;
+		String s = "";
+		for (Element e : elem) {
+			s += e.text();
+		}
+		s = s.trim();
+
+		return null;
 	}
 
 	/**
@@ -189,7 +227,7 @@ public class InfoGetter {
 		String movieName = movName.replace(" ", "+");
 		String search = "https://www.google.com/search?hl=en&q=" + name + " " + movieName + "+song";
 		Document doc = Jsoup.connect(search).get();
-		System.out.println(doc.title());
+		System.out.println("Song: " + doc.title());
 		Elements el = doc.getElementsByClass("QBl4oe");
 		if (el.size() == 0)
 			return false;
@@ -248,10 +286,10 @@ public class InfoGetter {
 		System.out.println(doc.title());
 		Elements el = doc.getElementsByClass("gic rl_center");
 		if (el.size() == 0)
-			return null;
+			return (ArrayList<Genre>) getMovieGenres(movieName, doc);
 		Elements ele = el.get(0).getElementsByClass("rlc__slider-page");
 		if (ele.size() == 0)
-			return null;
+			return (ArrayList<Genre>) getMovieGenres(movieName, doc);
 		for (Element elem : ele) {
 			Elements eleme = elem.getElementsByClass("title");
 			if (eleme.size() == 0)
@@ -265,6 +303,21 @@ public class InfoGetter {
 			}
 			text = text.trim();
 			temp.add(new Genre(text));
+		}
+		return temp;
+	}
+
+	private List<Genre> getMovieGenres(final String movieName, Document doc) {
+		List<Genre> temp = new ArrayList<Genre>();
+		Elements el = doc.getElementsByClass("NFQFxe viOShc LKPcQc EfDVh mod");
+		if (el.size() == 0)
+			return null;
+		Elements ele = el.get(0).getElementsByClass("Z0LcW");
+		if (ele.size() == 0)
+			return null;
+		String[] genres = ele.get(0).text().split("/");
+		for (String s : genres) {
+			temp.add(new Genre(s));
 		}
 		return temp;
 	}

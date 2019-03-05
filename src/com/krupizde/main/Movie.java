@@ -74,32 +74,42 @@ public class Movie {
 	}
 
 	/**
-	 * Method, that checks some basic errors from infor loading from google. Nothing is flawless.
+	 * Method, that checks some basic errors from info loading from google. Nothing
+	 * is flawless.
+	 * 
 	 * @param m Movie to repair
 	 */
 	public static void repairMovie(Movie m) {
 		if (m.getStudio() == null)
 			m.setStudio(new Studio("Unknown"));
-		for (int i = 0; i < m.getActors().size(); i++) {
-			if (m.getActors().get(i).getJmeno() == null || m.getActors().get(i).getPrijmeni() == null) {
-				m.actors.remove(m.actors.get(i));
-				i--;
-			}
+		if (m.getActors() != null) {
+			for (int i = 0; i < m.getActors().size(); i++) {
+				if (m.getActors().get(i).getJmeno() == null || m.getActors().get(i).getPrijmeni() == null) {
+					m.actors.remove(m.actors.get(i));
+					i--;
+				}
 
-		}
-		for (int i = 0; i < m.genres.size(); i++) {
-			if (m.genres.get(i).getName().isEmpty()) {
-				m.genres.remove(m.genres.get(i));
-				i--;
 			}
 		}
-		for (int i = 0; i < m.songs.size(); i++) {
-			if (m.songs.get(i).getAuthor() == null) {
-				m.songs.get(i).setAuthor(new Author("Unknown", null));
-			} else if (m.songs.get(i).getAuthor().getFirstName() == null) {
-				m.songs.get(i).setAuthor(new Author("Unknown", null));
+
+		if (m.genres != null) {
+			for (int i = 0; i < m.genres.size(); i++) {
+				if (m.genres.get(i).getName().isEmpty()) {
+					m.genres.remove(m.genres.get(i));
+					i--;
+				}
 			}
 		}
+		if (m.getSongs() != null) {
+			for (int i = 0; i < m.songs.size(); i++) {
+				if (m.songs.get(i).getAuthor() == null) {
+					m.songs.get(i).setAuthor(new Author("Unknown", null));
+				} else if (m.songs.get(i).getAuthor().getFirstName() == null) {
+					m.songs.get(i).setAuthor(new Author("Unknown", null));
+				}
+			}
+		}
+
 	}
 
 }
