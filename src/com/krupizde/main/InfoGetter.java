@@ -7,6 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 /**
  * 
  * @author Krupicka
@@ -20,7 +21,7 @@ public class InfoGetter {
 	 * @param m movie, which will be updated with new information
 	 * @throws IOException
 	 */
-	public boolean getMovieInfo(Movie m) throws IOException {
+	public void getMovieInfo(Movie m) throws IOException {
 		m.setActors(getActors(m.getName()));
 		m.setStudio(getStudio(m.getName()));
 		m.setMovieLength(getLength(m.getName()));
@@ -29,15 +30,14 @@ public class InfoGetter {
 		Movie.repairMovie(m);
 		System.out.println(m.getGenres());
 		System.out.println("------------------------------------------------------");
-		System.out.println(m.getActors().toString());
+		System.out.print("Actors:" + m.getActors().toString());
 		System.out.println("------------------------------------------------------");
-		System.out.println(m.getStudio());
+		System.out.print("Studio:" + m.getStudio());
 		System.out.println("------------------------------------------------------");
-		System.out.println(m.getMovieLength());
+		System.out.println("Movie length: " + m.getMovieLength());
 		System.out.println("------------------------------------------------------");
-		System.out.println(m.getSongs());
-		System.out.println("------------------------------------------------------");		
-		return true;
+		System.out.println("Songs: " + m.getSongs());
+		System.out.println("------------------------------------------------------");
 	}
 
 	/**
@@ -62,8 +62,13 @@ public class InfoGetter {
 					break;
 				if (elements.size() == 3) {
 					temp.add(new Actor(elements.get(0).text(), elements.get(1).text()));
-				} else {
-					temp.add(new Actor(elements.get(0).text().split(" ")[0], elements.get(0).text().split(" ")[1]));
+				} else if(elements.size() == 2){
+					try {
+						temp.add(new Actor(elements.get(0).text().split(" ")[0], elements.get(0).text().split(" ")[1]));
+					}catch(java.lang.ArrayIndexOutOfBoundsException e) {
+						System.out.println("Cant load actor: "+elements.get(0).text());
+					}
+					
 				}
 
 			}
@@ -74,6 +79,7 @@ public class InfoGetter {
 
 	/**
 	 * Method that loads studio from web page generated after google search
+	 * 
 	 * @param movieName name of movie thats studio i search for
 	 * @return new Studio with set name from the search
 	 * @throws IOException
@@ -100,6 +106,7 @@ public class InfoGetter {
 
 	/**
 	 * Gets length of the movie in minutes from google search web page
+	 * 
 	 * @param movieName name of movie thats length i search for
 	 * @return length of the movie in minutes or -1
 	 * @throws IOException
@@ -123,8 +130,10 @@ public class InfoGetter {
 	}
 
 	/**
-	 * Method first searches for google search url with all songs from the movie. Then the page is parsed 
-	 * and songs are loaded from the page. Then is every song googled again, just to get its author. 
+	 * Method first searches for google search url with all songs from the movie.
+	 * Then the page is parsed and songs are loaded from the page. Then is every
+	 * song googled again, just to get its author.
+	 * 
 	 * @param movieName name of movie thats songs i search for
 	 * @return list of songs from the movie
 	 * @throws IOException
@@ -205,6 +214,7 @@ public class InfoGetter {
 
 	/**
 	 * Method that searches for google url of all songs fro the movie
+	 * 
 	 * @param movieName name of movie thats songs i am searching for
 	 * @return google url with the songs search
 	 * @throws IOException
@@ -225,6 +235,7 @@ public class InfoGetter {
 
 	/**
 	 * Method searches for genres using google search and then parses the web page
+	 * 
 	 * @param movieName name of movie thats genres i am searching for
 	 * @return list of genres of the movie
 	 * @throws IOException
