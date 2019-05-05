@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.krupizde.entities.Movie;
+import com.krupizde.entity.generators.InfoGetter;
+
 /**
  * @author Krupicka
  *
@@ -40,5 +43,6 @@ public class LoadingThread extends Thread{
 				e.printStackTrace();
 			}
 		}
+		
 	}
 }

@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.krupizde.entities.Movie;
+
 /**
  * @author Krupicka
  *
