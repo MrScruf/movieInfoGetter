@@ -3,8 +3,6 @@
  */
 package com.krupizde.main;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import com.krupizde.persistence.Database;
 
@@ -19,16 +17,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	
-		try {
-			Connection conn = Database.getConn();
-			conn.close();
-		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-		/*@SuppressWarnings("unused")
-		Form f = new Form();*/
+		@SuppressWarnings("unused")
+		Form f = new Form();
 	}
 
 }
