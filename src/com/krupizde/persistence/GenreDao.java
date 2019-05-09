@@ -23,13 +23,20 @@ public class GenreDao implements IGenreDao {
 
 	@Override
 	public int addGenre(Genre g) throws ClassNotFoundException, SQLException {
-		PreparedStatement stm = Database.getConn().prepareStatement("insert into zanr(nazev)values(?)");
+		int id = getGenreId(g);
+		if (id != -1)
+			return id;
+		PreparedStatement stm = Database.getConn().prepareStatement("insert into zanr(nazev)values(?)",
+				new String[] { "id_zanr" });
 		stm.setString(1, g.getName().toLowerCase());
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int) generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}
@@ -43,11 +50,14 @@ public class GenreDao implements IGenreDao {
 	@Override
 	public int getGenreId(String name) throws ClassNotFoundException, SQLException {
 		PreparedStatement stm = Database.getConn().prepareStatement("select id_zanr from zanr where nazev = ?");
-		stm.setString(1, name);
+		stm.setString(1, name.toLowerCase());
 		ResultSet set = stm.executeQuery();
 		if (set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 

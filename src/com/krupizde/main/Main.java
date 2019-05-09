@@ -18,17 +18,17 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+	
 		try {
-			Connection c = Database.getConn();
-			System.out.println("Jdu");
-			c.close();
+			Connection conn = Database.getConn();
+			conn.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		//@SuppressWarnings("unused")
-		//Form f = new Form();
+		/*@SuppressWarnings("unused")
+		Form f = new Form();*/
 	}
 
 }

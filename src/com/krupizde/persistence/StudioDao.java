@@ -24,15 +24,19 @@ public class StudioDao implements IStudioDao {
 	@Override
 	public int addStudio(Studio s) throws ClassNotFoundException, SQLException {
 		int id = getStudioId(s);
+		System.out.println("Já jsem ID ---->>>>>>" + id);
 		if (id != -1)
 			return id;
-		PreparedStatement stm = Database.getConn().prepareStatement("insert into studio(nazev),values(?)");
+		PreparedStatement stm = Database.getConn().prepareStatement("insert into studio(nazev)values(?)",new String [] {"id_studio"});
 		stm.setString(1, s.getName());
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}
@@ -49,8 +53,11 @@ public class StudioDao implements IStudioDao {
 		stm.setString(1, name);
 		ResultSet set = stm.executeQuery();
 		if(set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 

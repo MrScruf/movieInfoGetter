@@ -24,7 +24,7 @@ public class SubtitlesDao implements ISubtitlesDao {
 
 	@Override
 	public int addSubtitles(Subtitles s) throws ClassNotFoundException, SQLException {
-		PreparedStatement stm = Database.getConn().prepareStatement("insert into titulky(id_jazyk, link, id_film)values(?,?,?)");
+		PreparedStatement stm = Database.getConn().prepareStatement("insert into titulky(id_jazyk, link, id_film)values(?,?,?)",new String [] {"id_titulky"});
 		ILanguageDao lanDao = LanguageDao.getDao();
 		stm.setInt(1, lanDao.addLanguage(s.getLanguage()));
 		stm.setString(2, s.getLink());
@@ -32,8 +32,11 @@ public class SubtitlesDao implements ISubtitlesDao {
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}

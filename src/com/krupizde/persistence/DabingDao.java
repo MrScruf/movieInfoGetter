@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.krupizde.entities.Dabing;
-import com.krupizde.entities.Language;
 import com.krupizde.persistence.interfaces.IDabingDao;
 import com.krupizde.persistence.interfaces.ILanguageDao;
 
@@ -26,7 +25,7 @@ public class DabingDao implements IDabingDao {
 	@Override
 	public int addDabing(Dabing d) throws ClassNotFoundException, SQLException {
 		PreparedStatement stm = Database.getConn()
-				.prepareStatement("insert into dabing(id_jazyk, link, id_film)values(?,?,?)");
+				.prepareStatement("insert into dabing(id_jazyk, link, id_film)values(?,?,?)",new String [] {"id_dabing"});
 		ILanguageDao lanDao = LanguageDao.getDao();
 		stm.setInt(1, lanDao.addLanguage(d.getLanguage()));
 		stm.setString(2, d.getLink());
@@ -34,8 +33,11 @@ public class DabingDao implements IDabingDao {
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}

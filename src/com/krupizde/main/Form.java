@@ -139,6 +139,7 @@ public class Form {
 				if((char)b == '\n') {
 					textArea.update(textArea.getGraphics());
 				}
+				textArea.setCaretPosition(textArea.getDocument().getLength());
 			}
 		};
 

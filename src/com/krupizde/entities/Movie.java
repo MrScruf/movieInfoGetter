@@ -16,6 +16,7 @@ public class Movie {
 	private int movieLength = 0;
 	private Studio studio = null;
 	private ArrayList<Song> songs = null;
+	private String path = null;
 
 	public Movie(String name) {
 		this.name = name;
@@ -71,6 +72,14 @@ public class Movie {
 
 	public void setSongs(ArrayList<Song> songs) {
 		this.songs = songs;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	/**

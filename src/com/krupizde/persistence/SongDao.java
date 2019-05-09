@@ -29,15 +29,18 @@ public class SongDao implements ISongDao {
 			return id;
 		IAuthorDao autDao = AuthorDao.getDao();
 		PreparedStatement stm = Database.getConn()
-				.prepareStatement("insert into pisnicka(link,nazev,id_autor)values(?,?,?)");
+				.prepareStatement("insert into pisnicka(link,nazev,id_autor)values(?,?,?)",new String [] {"id_pisnicka"});
 		stm.setString(1, s.getLink());
 		stm.setString(2, s.getName());
 		stm.setInt(3, autDao.addAuthor(s.getAuthor()));
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}
@@ -54,8 +57,11 @@ public class SongDao implements ISongDao {
 		stm.setString(1, name);
 		ResultSet set = stm.executeQuery();
 		if (set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 

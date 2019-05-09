@@ -15,6 +15,7 @@ import com.krupizde.entities.Genre;
 import com.krupizde.entities.Movie;
 import com.krupizde.entities.Song;
 import com.krupizde.entities.Studio;
+import com.krupizde.main.BasicData;
 
 /**
  * 
@@ -35,7 +36,11 @@ public class InfoGetter {
 		m.setMovieLength(getLength(m.getName()));
 		m.setSongs(getSongsAndAutors(m.getName()));
 		m.setGenres(getMovieGenres(m.getName()));
+		m.setPath(BasicData.pathTemplateMovie+"/"+m.getName().toLowerCase().replace(" ", "_")+".avi");
 		Movie.repairMovie(m);
+		System.out.println("------------------------------------------------------");
+		System.out.println(m.getPath());
+		System.out.println("------------------------------------------------------");
 		System.out.println(m.getGenres());
 		System.out.println("------------------------------------------------------");
 		System.out.println("Actors:" + m.getActors().toString());
@@ -206,7 +211,13 @@ public class InfoGetter {
 			} else {
 				songName = elem.text().substring(2);
 			}
-
+			if(songName.length() > 100) {
+				if(songName.contains("(")) {
+					songName = songName.substring(0,songName.indexOf("("));
+				}else {
+					continue;
+				}
+			}
 			Song s = new Song(songName);
 			temp.add(s);
 			getAuthorAndLink(s, movieName);
@@ -248,7 +259,7 @@ public class InfoGetter {
 		Elements eleme = elem.get(0).getElementsByClass("fl");
 		if (eleme.size() <= 1)
 			return false;
-		if (eleme.get(1).text().split(" ").length == 2) {
+		if (eleme.get(1).text().split(" ").length == 2 && !eleme.get(1).text().contains("The ") && !eleme.get(1).text().contains(".")) {
 			song.setAuthor(new Author(eleme.get(1).text().split(" ")[0], eleme.get(1).text().split(" ")[1]));
 		} else {
 			song.setAuthor(new Author(eleme.get(1).text(), ""));
@@ -309,7 +320,14 @@ public class InfoGetter {
 				text = text.substring(0, text.indexOf("Film"));
 			}
 			text = text.trim();
-			temp.add(new Genre(text));
+			if(text.contains("/")) {
+				String[] gens = text.split("/");
+				for(String str : gens) {
+					temp.add(new Genre(str));
+				}
+			}else {
+				temp.add(new Genre(text));
+			}			
 		}
 		return temp;
 	}

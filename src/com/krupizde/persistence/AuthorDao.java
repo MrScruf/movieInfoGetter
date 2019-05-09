@@ -26,15 +26,17 @@ public class AuthorDao implements IAuthorDao {
 		int id = getAuthorId(a);
 		if (id != -1)
 			return id;
-		PreparedStatement stm = Database.getConn().prepareStatement("insert into autor(jmeno, prijmeni)values(?,?)");
+		PreparedStatement stm = Database.getConn().prepareStatement("insert into autor(jmeno, prijmeni)values(?,?)",new String [] {"id_autor"});
 		stm.setString(1, a.getFirstName());
 		stm.setString(2, a.getLastName());
 		stm.executeUpdate();
-		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}
@@ -42,7 +44,7 @@ public class AuthorDao implements IAuthorDao {
 
 	@Override
 	public int getAuthorId(Author a) throws ClassNotFoundException, SQLException {
-		return a.getLastName().isEmpty() ? getAuthorId(a.getFirstName())
+		return a.getLastName() == null || a.getLastName().isEmpty() ? getAuthorId(a.getFirstName())
 				: getAuthorId(a.getFirstName(), a.getLastName());
 	}
 
@@ -54,8 +56,11 @@ public class AuthorDao implements IAuthorDao {
 		stm.setString(2, surname);
 		ResultSet set = stm.executeQuery();
 		if (set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 
@@ -65,8 +70,11 @@ public class AuthorDao implements IAuthorDao {
 		stm.setString(1, name);
 		ResultSet set = stm.executeQuery();
 		if (set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 

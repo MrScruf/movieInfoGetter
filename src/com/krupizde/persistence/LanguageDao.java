@@ -25,14 +25,17 @@ public class LanguageDao implements ILanguageDao {
 		int id = getLanguageId(l);
 		if (id != -1)
 			return id;
-		PreparedStatement stm = Database.getConn().prepareStatement("insert into jazyk(nazev,zkratka)values(?,?)");
+		PreparedStatement stm = Database.getConn().prepareStatement("insert into jazyk(nazev,zkratka)values(?,?)",new String [] {"id_jazyk"});
 		stm.setString(1, l.getName());
 		stm.setString(2, l.getShor());
 		stm.executeUpdate();
 		try (ResultSet generatedKeys = stm.getGeneratedKeys()) {
 			if (generatedKeys.next()) {
-				return generatedKeys.getInt(1);
+				int ret = (int)generatedKeys.getLong(1);
+				stm.close();
+				return ret;
 			} else {
+				stm.close();
 				return -1;
 			}
 		}
@@ -47,8 +50,11 @@ public class LanguageDao implements ILanguageDao {
 		stm.setString(1, name);
 		ResultSet set = stm.executeQuery();
 		if (set.next()) {
-			return set.getInt(1);
+			int ret = set.getInt(1);
+			stm.close();
+			return ret;
 		}
+		stm.close();
 		return -1;
 	}
 }

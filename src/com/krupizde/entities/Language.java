@@ -8,7 +8,9 @@ package com.krupizde.entities;
  *
  */
 public class Language {
-
+	public Language() {
+		// TODO Auto-generated constructor stub
+	}
 	private String name;
 	private String shor;
 	public String getName() {
@@ -23,6 +25,12 @@ public class Language {
 	public void setShor(String shor) {
 		this.shor = shor;
 	}
+	public Language(String name, String shor) {
+		super();
+		this.name = name;
+		this.shor = shor;
+	}
+	
 	
 	
 }
